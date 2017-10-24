@@ -2891,6 +2891,10 @@ nvm() {
 
       # Change current version
       PATH="$(nvm_change_path "$PATH" "/bin" "$NVM_VERSION_DIR")"
+      if [[ $PATH =~ (^|.*:)(|\./)node_modules/\.bin(:.*|$) ]]; then
+        PATH=$(echo $PATH | sed -e "s#\(\./\)\?node_modules/\.bin/\?:\?##g")
+        PATH=node_modules/.bin:"$PATH"
+      fi
       if nvm_has manpath; then
         if [ -z "${MANPATH-}" ]; then
           local MANPATH
@@ -3021,6 +3025,7 @@ nvm() {
       if [ "$ZSH_HAS_SHWORDSPLIT_UNSET" -eq 1 ] && nvm_has "unsetopt"; then
         unsetopt shwordsplit
       fi
+
       return $EXIT_CODE
     ;;
     "exec" )
